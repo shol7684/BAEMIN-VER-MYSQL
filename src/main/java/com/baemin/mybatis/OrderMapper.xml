@@ -38,13 +38,13 @@
 	
 	<insert id="order">
 		<if test="userId == 0">
-			INSERT INTO BM_ORDER_NON_USER (
+			INSERT INTO BM_ORDER_NON_USER 
 		</if>
 		
 		<if test="userId != 0">
-			INSERT INTO BM_ORDER_USER (
+			INSERT INTO BM_ORDER_USER 
 		</if>
-			    ORDER_NUM
+			 (   ORDER_NUM
 			    ,STORE_ID 
 			    ,USER_ID 
 			    ,PAY_METHOD 
@@ -74,30 +74,27 @@
 	
 	
 	<insert id="orderDetail">
-		INSERT ALL
-		<foreach collection="detail" item="detail" >
 		<if test="userId == 0">
-			INTO BM_ORDER_DETAIL_NON_USER (
+			INSERT INTO BM_ORDER_DETAIL_NON_USER 
 		</if>	
 			
 		<if test="userId != 0">
-			INTO BM_ORDER_DETAIL_USER (
+			INSERT INTO BM_ORDER_DETAIL_USER 
 		</if>
-				ORDER_NUM
-				,food_info
-			) VALUES (
+		
+			(ORDER_NUM, FOOD_INFO) VALUES 
+		
+		<foreach collection="detail" item="detail" separator="," >
+			(
 				#{detail.orderNum }
 				,#{detail.foodInfoJSON }
 			)
 		</foreach>
-		SELECT * FROM DUAL
 	</insert>
 	
 	<select id="orderList" resultType="OrderList">
 	SELECT * FROM (
-    	SELECT	ROWNUM R
-    			,O.* 
-    	FROM 	(SELECT	count(*) over() list_count,
+    	SELECT	count(*) over() list_count,
 				    	o.order_num,
 				    	o.user_id,
 				    	o.order_date,
@@ -120,7 +117,7 @@
 			            r.review_img
 			FROM		bm_order_user o
 			LEFT JOIN   (SELECT  ORDER_NUM, 
-                                 LISTAGG(FOOD_INFO, '/') food_info
+                                 GROUP_CONCAT(FOOD_INFO SEPARATOR '/') food_info
                         FROM     BM_ORDER_DETAIL_USER 
                         GROUP BY ORDER_NUM) d
 			ON		  	o.order_num = d.order_num
@@ -130,9 +127,8 @@
 	        ON			o.order_num = r.order_num
 			WHERE		o.user_id = #{userId }
 			ORDER BY	o.order_date desc  
-	        ) O
-		) 
-	WHERE R BETWEEN #{firstList } AND #{lastList }	
+		) TEMP
+      LIMIT #{firstList }, #{view }
 	</select>
 	
 	
@@ -155,7 +151,7 @@
 			    s.delevery_tip
 	FROM		bm_order_user o
 	LEFT JOIN   (SELECT  ORDER_NUM, 
-                         LISTAGG(FOOD_INFO, '/') food_info
+                         GROUP_CONCAT(FOOD_INFO SEPARATOR '/') food_info
                 FROM     BM_ORDER_DETAIL_USER 
                 GROUP BY ORDER_NUM) d
 	ON		  	o.order_num = d.order_num

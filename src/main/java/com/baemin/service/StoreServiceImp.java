@@ -103,7 +103,7 @@ public class StoreServiceImp implements StoreService {
 		map.put("keyword", keyword);
 		map.put("address", address);
 		map.put("firstList", p.getFirstList());
-		map.put("lastList", p.getLastList());
+		map.put("view", p.getView());
 		
 		return storeDAO.storeSearch(map);
 	}

@@ -26,11 +26,11 @@
 				<div>주문번호 : ${orderDetail.orderNum }</div>
 			</div>
 		</div>
-
+		
 		<ul class="order_menu">
 			<c:forEach begin="0" end="${fn:length(cart) -1 }" var="i">
 				<li>
-					<div><span>${cart[i].foodName } ${amount[i] }개</span></div>
+					<div><span>${cart[i].foodName } ${cart[i].amount }개</span></div>
 					
 					<ul>
 						<li>기본가격 <fm:formatNumber value="${cart[i].foodPrice }" />원</li>

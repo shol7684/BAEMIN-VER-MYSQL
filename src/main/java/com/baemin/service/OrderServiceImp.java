@@ -36,8 +36,6 @@ public class OrderServiceImp implements OrderService {
 	@Override
 	public long orderPriceCheck(CartList cartList) {
 
-		System.out.println("cartDetail = " + cartList);
-
 		List<Cart> cart = cartList.getCart();
 		List<Integer> foodPriceList = orderDAO.foodPriceList(cart);
 		List<Integer> optionPriceList = orderDAO.optionPriceList(cart);
@@ -78,8 +76,6 @@ public class OrderServiceImp implements OrderService {
 		for(int i=0;i<detail.length;i++) {
 			String cartJSON = gson.toJson(cartList.get(i));
 			
-			System.out.println(cartJSON);
-			
 			detail[i] = new OrderDetail(info.getOrderNum(), cartJSON);
 		}
 		orderDAO.order(info);
@@ -115,7 +111,7 @@ public class OrderServiceImp implements OrderService {
 		Map<String, Object> map = new HashMap<>();
 		map.put("userId", userId);
 		map.put("firstList", p.getFirstList());
-		map.put("lastList", p.getLastList());
+		map.put("view", p.getView());
 		return orderDAO.orderList(map);
 	}
 	

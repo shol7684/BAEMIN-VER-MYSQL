@@ -139,6 +139,8 @@ public class OrderController {
 			Page p = new Page(page);
 			List<OrderList> orderList = orderService.orderList(userId, p);
 			
+			orderList.forEach(System.out::println);
+			
 			if (orderList.size() == 0) {
 				return "order/orderList";
 			}

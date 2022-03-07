@@ -86,8 +86,6 @@ public class UserController {
 	public int overlapCheck(String value, String valueType) {
 //		value = 중복체크할 값
 //		valeuType = username, nickname
-		System.out.println(value);
-		System.out.println(valueType);
 		int count = userService.overlapCheck(value, valueType);
 		
 		System.out.println(count);

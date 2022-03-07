@@ -69,7 +69,7 @@
 	<select id="getGiftCart" resultType="Map">
 		SELECT	    POINT "point"
 		            ,INFO "info"
-		            ,NVL(U.USER_ID, 0) "userId"
+		            ,IFNULL(U.USER_ID, 0) "userId"
 		FROM	    BM_GIFT_CARD G
 		LEFT JOIN   (SELECT * FROM BM_USED_CARD WHERE USER_ID = #{userId }) U
 		ON          G.GIFT_CARD_NUM = U.GIFT_CARD_NUM
@@ -79,25 +79,23 @@
 	
 	
 	<insert id="pointRegist" >
-		INSERT ALL
-			INTO BM_POINT (
-				USER_ID
-				,INFO
-				,POINT
-			) VALUES (
-				#{userId }
-				,#{info }
-				,#{point }
-			)
-			
-			INTO BM_USED_CARD (
-				USER_ID
-				,GIFT_CARD_NUM
-			) VALUES (
-				#{userId }
-				,#{giftCardNum }
-			)
-		SELECT * FROM DUAL	
+		INSERT INTO BM_POINT (
+			USER_ID
+			,INFO
+			,POINT
+		) VALUES (
+			#{userId }
+			,#{info }
+			,#{point }
+		);
+		
+		INSERT INTO BM_USED_CARD (
+			USER_ID
+			,GIFT_CARD_NUM
+		) VALUES (
+			#{userId }
+			,#{giftCardNum }
+		);
 	</insert>
 	
 	

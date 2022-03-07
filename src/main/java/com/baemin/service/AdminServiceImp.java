@@ -49,6 +49,8 @@ public class AdminServiceImp implements AdminService {
 	public void addMenu(Food food, String[] foodOption, Integer[] foodOptionPrice) {
 		long foodId = adminDAO.addMenu(food);
 		
+		System.out.println("foodId" + foodId);
+		
 		if(foodOption != null) {
 			List<Map<String, Object>> optionList = new ArrayList<>();
 			

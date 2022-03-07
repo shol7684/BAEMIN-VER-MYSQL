@@ -231,17 +231,17 @@
 	    (SELECT 	C.*
 	            	,'true' IS_OPEN
 	    FROM    	STORE C 
-	    WHERE    	(TO_CHAR(SYSTIMESTAMP, 'HH24') 
+	    WHERE    	(DATE_FORMAT(NOW(), '%H')  
 	    BETWEEN 	OPENING_TIME 
 	    AND     	OPENING_TIME + BS_TIME)
 	UNION ALL
 	    SELECT  	C.*
 	            	,'false' IS_OPEN 
 	    FROM    	STORE C 
-	    WHERE 	  	(TO_CHAR(SYSTIMESTAMP, 'HH24') 
+	    WHERE 	  	(DATE_FORMAT(NOW(), '%H')  
 	    NOT BETWEEN OPENING_TIME 
 	    AND     	OPENING_TIME + BS_TIME )
-		) 
+		) TEMP1
 	ORDER BY LIKES_DATE DESC
 	</select>
 	
@@ -267,23 +267,24 @@
 	    LEFT JOIN 	R_COUNT T
 	    ON	 		S.ID = T.STORE_ID
 	    WHERE 		ID IN(${likes })
+	    ORDER BY	FIELD(ID, ${likes})
 	)
 	
 	SELECT * FROM
 	    (SELECT 	C.*
 	            	,'true' IS_OPEN
 	    FROM    	STORE C 
-	    WHERE    	(TO_CHAR(SYSTIMESTAMP, 'HH24') 
+	    WHERE    	(DATE_FORMAT(NOW(), '%H')
 	    BETWEEN 	OPENING_TIME 
 	    AND     	OPENING_TIME + BS_TIME)
 	UNION ALL
 	    SELECT  	C.*
 	            	,'false' IS_OPEN 
 	    FROM    	STORE C 
-	    WHERE 	  	(TO_CHAR(SYSTIMESTAMP, 'HH24') 
+	    WHERE 	  	(DATE_FORMAT(NOW(), '%H')
 	    NOT BETWEEN OPENING_TIME 
 	    AND     	OPENING_TIME + BS_TIME )
-		) 
+		) RESULT
 	</select>
 	
 	
@@ -313,25 +314,23 @@
 	)
 	
 	SELECT * FROM 
-	    (SELECT ROWNUM RN,
-	    		COUNT(*) OVER() list_count, 
+	    (SELECT COUNT(*) OVER() list_count, 
 	            RESULT.* 
 	    FROM   
 	            (SELECT C.* 
 	                    ,'true' IS_OPEN 
 	            FROM    STORE C  
-	            WHERE   TO_CHAR(SYSTIMESTAMP, 'HH24') BETWEEN OPENING_TIME AND OPENING_TIME + BS_TIME
+	            WHERE   DATE_FORMAT(NOW(), '%H') BETWEEN OPENING_TIME AND OPENING_TIME + BS_TIME
 	            
 	            UNION ALL
 		         
 	            SELECT C.*
 	                   ,'false' IS_OPEN 
 	            FROM   STORE C  
-	            WHERE  TO_CHAR(SYSTIMESTAMP, 'HH24') NOT BETWEEN OPENING_TIME AND OPENING_TIME + BS_TIME 
+	            WHERE  DATE_FORMAT(NOW(), '%H') NOT BETWEEN OPENING_TIME AND OPENING_TIME + BS_TIME 
 		        ) RESULT
-		 ) 
-	WHERE RN BETWEEN #{firstList } AND ${lastList }	 
-		
+		 ) A
+	LIMIT 	#{firstList } , ${view }
 	</select>
 	
 	

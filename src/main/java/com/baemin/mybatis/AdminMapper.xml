@@ -63,7 +63,7 @@
 	
 	
 	
-	<insert id="addMenu">
+<!-- 	<insert id="addMenu">
 		<selectKey keyProperty="id" resultType="long" order="BEFORE" >
 		   SELECT FOOD_ID_SEQ.NEXTVAL FROM DUAL
 	   </selectKey>
@@ -84,14 +84,33 @@
 			   ,#{foodImg }
 			   ,#{foodThumb }
 		   )
-   </insert>
+   </insert> -->
 	
+	
+	<!-- useGeneratedKeys를 사용하면 keyProperty에 설정한 컬럼을 리턴받을수있다 -->
+	<insert id="addMenu" useGeneratedKeys="true" keyProperty="id">
+	   INSERT INTO BM_FOOD (
+			   STORE_ID
+			   ,FOOD_NAME
+			   ,FOOD_PRICE
+			   ,FOOD_DEC
+			   ,FOOD_IMG
+			   ,FOOD_THUMB
+		   ) VALUES (
+			   #{storeId }
+			   ,#{foodName }
+			   ,#{foodPrice }
+			   ,#{foodDec }
+			   ,#{foodImg }
+			   ,#{foodThumb }
+		   )
+   </insert>
+   
 	
 	<insert id="addMenuOption">
-		INSERT INTO BM_FOOD_OPTION 
+		INSERT INTO BM_FOOD_OPTION (FOOD_ID, OPTION_NAME, OPTION_PRICE)
 		<foreach collection="list" item="item"  separator="UNION ALL" >
-				SELECT	GET_OPTION_SEQ()
-						,#{item.foodId }
+				SELECT	#{item.foodId }
 						,#{item.optionName }
 						,#{item.optionPrice } 
 				FROM	DUAL
@@ -101,7 +120,6 @@
 	
 	
 	<update id="updateMenu">
-	DECLARE BEGIN
 		UPDATE	BM_FOOD 
 		SET		STORE_ID = #{food.storeId }
 			    ,FOOD_NAME = #{food.foodName }
@@ -112,45 +130,45 @@
 		WHERE	ID = #{food.id };
 	
 		<if test="optionList != null">
-			DELETE BM_FOOD_OPTION WHERE FOOD_ID = #{food.id } AND ID NOT IN
-		<foreach collection="optionList" item="item" open="(" close=");" separator=","  >
-			${item.optionId }
-		</foreach>
+			DELETE FROM BM_FOOD_OPTION WHERE FOOD_ID = #{food.id } AND ID NOT IN
+			<foreach collection="optionList" item="item" open="(" close=");" separator=","  >
+				${item.optionId }
+			</foreach>
 		
-		<foreach collection="optionList" item="item" separator=";" close=";">
-			<if test="item.optionId == -1">
-				INSERT INTO	BM_FOOD_OPTION
-				VALUES		(GET_OPTION_SEQ()
-							,#{food.id }
-							,#{item.optionName }
-							,#{item.optionPrice }) 
-			</if>
-			
-			<if test="item.optionId != -1">
-				UPDATE	BM_FOOD_OPTION 
-				SET		OPTION_NAME = #{item.optionName }
-						,OPTION_PRICE = #{item.optionPrice }
-				WHERE	FOOD_ID = #{food.id }
-				AND		ID = #{item.optionId }		
-			</if>
-		</foreach>
+			<foreach collection="optionList" item="item" separator=";" close=";">
+				<if test="item.optionId == -1">
+					INSERT INTO	
+					BM_FOOD_OPTION (FOOD_ID
+									,OPTION_NAME
+									,OPTION_PRICE)
+					VALUES		(#{food.id }
+								,#{item.optionName }
+								,#{item.optionPrice }) 
+				</if>
+				
+				<if test="item.optionId != -1">
+					UPDATE	BM_FOOD_OPTION 
+					SET		OPTION_NAME = #{item.optionName }
+							,OPTION_PRICE = #{item.optionPrice }
+					WHERE	FOOD_ID = #{food.id }
+					AND		ID = #{item.optionId }		
+				</if>
+			</foreach>
 		</if>
-		
-	END;	
 	</update>
 	
 	
 	
 	
 	<delete id="deleteMenuOption">
-		DELETE BM_FOOD_OPTION WHERE FOOD_ID = #{foodId }
+		DELETE FROM BM_FOOD_OPTION WHERE FOOD_ID = #{foodId }
 	</delete>
 	
 	
 	
 	
 	<delete id="deleteMenu">
-		DELETE BM_FOOD WHERE STORE_ID = ${storeId } AND ID IN 
+		DELETE FROM BM_FOOD WHERE STORE_ID = ${storeId } AND ID IN 
 		<foreach collection="deleteNumber" item="arr" open="(" close=")" separator="," >
 			${arr }
 		</foreach>
@@ -179,16 +197,17 @@
 	<select id="orderList" resultType="OrderList">
 	WITH T_ORDER AS ( 
 	    SELECT * FROM (
-	    	SELECT * FROM BM_ORDER_USER UNION ALL SELECT * FROM BM_ORDER_NON_USER) WHERE STORE_ID = #{storeId }
+	    	SELECT * FROM BM_ORDER_USER UNION ALL SELECT * FROM BM_ORDER_NON_USER) RESULT 
+    	WHERE STORE_ID = #{storeId }
 	),
 	T_DETAIL AS (
 	    SELECT  ORDER_NUM, 
-	            LISTAGG(FOOD_INFO, '/') FOOD_INFO
+	            GROUP_CONCAT(FOOD_INFO SEPARATOR '/') FOOD_INFO
 	    FROM BM_ORDER_DETAIL_USER N
 	    GROUP BY    ORDER_NUM
 	    UNION ALL
 	    SELECT  ORDER_NUM, 
-	            LISTAGG(FOOD_INFO, '/') FOOD_INFO
+	            GROUP_CONCAT(FOOD_INFO SEPARATOR '/') FOOD_INFO
 	    FROM BM_ORDER_DETAIL_NON_USER N
 	    GROUP BY    ORDER_NUM
 	)
@@ -207,10 +226,9 @@
       ) ORDER_COUNT
       LEFT JOIN
       (SELECT * FROM
-          (SELECT ROWNUM RN, T.* FROM (
-              SELECT * FROM T_ORDER WHERE DELEVERY_STATUS LIKE '${list }%' ORDER BY ORDER_DATE) T ) 
-       WHERE RN BETWEEN 1 AND #{lastList }
-       )O       
+			(SELECT * FROM T_ORDER WHERE DELEVERY_STATUS LIKE '${list }%' ORDER BY ORDER_DATE) RESULT 
+   		LIMIT 0, #{lastList } 
+       )O
       ON          ORDER_COUNT.STORE_ID = O.STORE_ID
       LEFT JOIN   T_DETAIL D      
       ON          O.ORDER_NUM  = D.ORDER_NUM
@@ -305,9 +323,9 @@
 	    		,TO_DATE(ORDER_DATE) ORDER_DATE
                 ,TOTAL_PRICE
         FROM (
-	        SELECT TO_CHAR(ORDER_DATE, 'YYYY/MM/DD') ORDER_DATE, STORE_ID, TOTAL_PRICE, DELEVERY_STATUS FROM BM_ORDER_USER
+	        SELECT DATE_FORMAT(ORDER_DATE, '%Y/%m/%d') ORDER_DATE, STORE_ID, TOTAL_PRICE, DELEVERY_STATUS FROM BM_ORDER_USER
 	        UNION ALL
-	        SELECT TO_CHAR(ORDER_DATE, 'YYYY/MM/DD') ORDER_DATE, STORE_ID, TOTAL_PRICE, DELEVERY_STATUS FROM BM_ORDER_NON_USER
+	        SELECT DATE_FORMAT(ORDER_DATE, '%Y/%m/%d') ORDER_DATE, STORE_ID, TOTAL_PRICE, DELEVERY_STATUS FROM BM_ORDER_NON_USER
 	    )
 	    WHERE	STORE_ID = #{storeId }
 	    AND   	DELEVERY_STATUS = '배달 완료'
