@@ -144,7 +144,6 @@ function authCompletion(){
 		location.href = "/modify/password?username=" + username;
 	})
 	.fail(function(result){
-		console.log(result);
 		swal(result.responseText);
 	})
 }

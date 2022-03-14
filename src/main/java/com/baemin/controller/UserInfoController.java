@@ -78,8 +78,6 @@ public class UserInfoController {
 			authNum += (int)(Math.random() * 10);
 		}
 		
-		System.out.println("인증번호 : " + authNum);
-		
 		// 전화번호로 인증번호 보내기 추가
 		if(phone != null) {
 //			System.out.println("전화번호로 인증번호 보내기");

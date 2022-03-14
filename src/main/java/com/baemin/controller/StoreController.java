@@ -86,7 +86,6 @@ public class StoreController {
 	@ResponseBody
 	@GetMapping("/foodOption")
 	public List<FoodOption> menuDetail(int foodId) {
-		System.out.println("foodId = " + foodId);
 		List<FoodOption> foodOption = storeService.foodOption(foodId);
 		return foodOption;
 	}
@@ -140,11 +139,9 @@ public class StoreController {
 		
 		long userId = 0;
 		if (user == null) {
-			System.out.println("찜하기 비회원");
 			new CookieManager().likes(id);
 			
 		} else {
-			System.out.println("찜하기 회원");
 			userId = user.getUser().getId();
 			storeService.likes(id, likes, userId);
 		}
@@ -191,7 +188,6 @@ public class StoreController {
 			if(storeList.size() == 0) {
 				model.addAttribute("noSearch", true);
 			} else {
-				System.out.println("size = " + storeList.size());
 				p.totalPage(storeList.get(0).getListCount());
 				model.addAttribute("page", p);
 				model.addAttribute("storeList", storeList);

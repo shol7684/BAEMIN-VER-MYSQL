@@ -88,7 +88,6 @@ public class UserController {
 //		valeuType = username, nickname
 		int count = userService.overlapCheck(value, valueType);
 		
-		System.out.println(count);
 		return count;
 	}
 	

@@ -24,8 +24,6 @@ $(document).ready(function() {
 			if(run) {
 				return;
 			}
-			console.log("페이지 추가");
-			console.log("sort= " + sort);
 			
 			page++;
 			run = true;
@@ -95,7 +93,6 @@ $(".option li").click(function() {
 
 
 function storeList(result){
-	console.log("sort = " + sort);
 	let html = "";
 		for(var i=0;i<result.length;i++) {
 			const store = result[i];

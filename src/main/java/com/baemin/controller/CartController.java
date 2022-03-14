@@ -26,8 +26,6 @@ public class CartController {
 		CartList cartList = (CartList) session.getAttribute("cartList");
 		int totalPrice = FoodPriceCalc.foodPriceCalc(cart);
 		
-		System.out.println("카트 가격 계산 = " + totalPrice);
-		
 		if(cartList == null) {
 			List<Cart> newCart = new ArrayList<>();
 			cart.setTotalPrice(totalPrice);

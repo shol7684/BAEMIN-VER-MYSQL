@@ -109,7 +109,6 @@ public class AdminController {
 	@PatchMapping("/admin/management/menu")
 	public ResponseEntity<Food> updateMenu(Food food, String[] foodOption, Integer[] foodOptionPrice, Integer[] optionId, MultipartFile file) throws IOException {
 		
-		System.out.println(food);
 		if(file.isEmpty()) {
 			String img = File.separator + "img" + File.separator + "none.gif";
 			food.setFoodImg(img);
@@ -151,7 +150,6 @@ public class AdminController {
 	@IsMyStore
 	@GetMapping("/admin/management/orderList")
 	public ResponseEntity<Map<String, Object>> orderList(long storeId, String list, int page) {
-		System.out.printf("가게번호 : %d, 목록 : %s , 페이지 : %d%n",storeId, list, page);
 		
 		List<OrderList> orderList = adminService.order(storeId, list, page);
 		
@@ -167,9 +165,6 @@ public class AdminController {
 		map.put("orderList", orderList);
 		map.put("cartList", menuList);
 		
-		for(int i=0;i<orderList.size();i++) {
-			System.out.println(orderList.get(i));
-		}
 		
 		return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
 	}
@@ -209,9 +204,6 @@ public class AdminController {
 	@IsMyStore
 	@GetMapping("/admin/management/salesDetail")
 	public ResponseEntity<Map<String, Object>> salesDetail(long storeId, String date, String sort){
-		System.out.println("매출 상세");
-		
-		System.out.printf("가게 번호 : %d, 날짜 : %s, 정렬 : %s%n ", storeId, date, sort);
 		Map<String, Object> salseToday = adminService.salesDetail(storeId, date, sort);
 		
 		return new ResponseEntity<Map<String, Object>>(salseToday, HttpStatus.OK);
@@ -225,7 +217,7 @@ public class AdminController {
 //		term =
 //		week, month, year
 		
-		List<Sales> sales = adminService.sales(storeId,date, term);
+		List<Sales> sales = adminService.sales(storeId, date, term);
 		return new ResponseEntity<List<Sales>>(sales, HttpStatus.OK);
 	}
 	

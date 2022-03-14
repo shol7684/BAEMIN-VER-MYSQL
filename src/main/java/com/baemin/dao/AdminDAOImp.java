@@ -28,8 +28,6 @@ public class AdminDAOImp implements AdminDAO {
 		map.put("info", info);
 		map.put("point", point);
 		
-		System.out.println(map);
-		
 		return sql.insert("admin.pointUpdate", map); 
 	}
 

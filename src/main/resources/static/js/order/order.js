@@ -197,7 +197,8 @@ function messageSend() {
 	let socket = new SockJS('/websocket');
 
 	let stompClient = Stomp.over(socket);
-
+	stompClient.debug = null; // stomp 콘솔출력 X
+	
 	stompClient.connect({}, function() {
 		const message = {
 			message : "새 주문이 들어왔습니다"
@@ -308,7 +309,6 @@ $(".amount_box button").click(function(){
 	let foodPrice = $(this).parent().siblings(".sum");
 	let clickBtn = "";
 	
-	console.log(index);
 	if($(this).hasClass("plus")){
 		clickBtn = "plus";
 	} else {

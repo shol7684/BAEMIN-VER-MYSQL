@@ -13,7 +13,7 @@ let getDetail = true;
 
 function graphDraw(data, format, title){
 	let html = "";
-	for(i=0;i<data.length-1;i++) {
+	for(i=0;i<data.length;i++) {
 		html +=
 		`<li>
 			<span class="sales"></span>
@@ -23,17 +23,16 @@ function graphDraw(data, format, title){
 	}
 	$(".graph_box ul").html(html);
 	
-	
-	if(!data[data.length-1]) {
-		$("main h1").text(title +"0원");
-		return;
-	}
 		
-	const total = data[data.length-1].total;
+	let total = 0;
+	
+	for(i=0;i<data.length;i++) {
+		total += data[i].total;
+	}
 	
 	$("main h1").text(title + total.toLocaleString() + "원");
 	
-	for(i=0;i<data.length-1;i++) {
+	for(i=0;i<data.length;i++) {
 		const sum = data[i].total;
 		const avg = sum / total * 100;
 		
@@ -48,45 +47,47 @@ function graphDraw(data, format, title){
 
 	
 function sales(term){
-	const date = moment(new Date()).format("YYYY-MM");
+	const date = $("#date").val() + '-01';
+	const today = moment(new Date(date));
 	
 	let title = "";
 	let format = "";
 	const data = {
-		date : date,
 		storeId : storeId
 	};
 	
 	switch(term) {
+		// 이번주
 		case "week": {
-			format = "MM월 DD일";
 			data.term = "week";
+			format = "MM월 DD일";
 			title = "이번 주 총 합계 ";
 			break;
 		} 
+		// 이번달
 		case "thisMonth": {
-			format = "D";
 			data.term = "month";
-			title = moment(date).format("M") + "월 총 합계 ";
+			format = "D";
+			title = today.format("MM") + "월 총 합계 ";
 			break;
 		} 
-		
+		// 달력으로 다른달 검색
 		case "month": {
-			format = "D";
-			data.date = $("#date").val();
+			data.date = date;
 			data.term = "month";
-			title = moment(data.date).format("M") + "월 총 합계 ";
+			format = "D";
+			title = today.format("MM") + "월 총 합계 ";
 			break;
 		}
-		
-		
+		// 올해		
 		case "year": {
-			format = "MM월"
 			data.term = "year";
-			title = moment(date).format("YYYY") + "년 총 합계 ";
+			format = "MM월"
+			title = moment(today).format("YYYY") + "년 총 합계 ";
 			break;
 		}
 	}
+	
 	
 	$.ajax({
 		url: "/admin/management/sales",
@@ -94,8 +95,6 @@ function sales(term){
 		data: data
 	})
 	.done(function(result) {
-		console.log(result);
-		
 		graphDraw(result, format, title);
 		
 	})
@@ -263,8 +262,6 @@ $(".today_detail .sort_price").click(function(){
 
 const detail = function(result) {
 	const html = detailHtml(result);
-	console.log(result);
-	console.log(123123);
 	$(".other_detail .sales_today_detail").html(html);
 }
 

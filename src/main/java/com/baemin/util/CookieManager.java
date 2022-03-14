@@ -36,7 +36,6 @@ public class CookieManager {
 		if(cookie == null) {
 			list.add(storeId);
 			addCookie(LIKES_LIST, list.toString());
-			System.out.println("찜 목록 = " + list);
 			return;
 		}
 		
@@ -58,7 +57,6 @@ public class CookieManager {
 			addCookie(LIKES_LIST, list.toString());
 		}
 		
-		System.out.println("찜 목록 = " + list);
 	}
 	
 	

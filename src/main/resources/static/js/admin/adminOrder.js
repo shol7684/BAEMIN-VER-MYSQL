@@ -236,6 +236,7 @@ function orderList(){
 // 주문 완료 메세지 받기
 const socket = new SockJS('/websocket');
 const stompClient = Stomp.over(socket);
+stompClient.debug = null; // stomp 콘솔출력 X
 
 stompClient.connect({}, function() {
 
@@ -316,7 +317,6 @@ function listRefresh(index, count){
 	}
 	
 	if(list < count) {
-		console.log("lsit : " +  list + " + count : " + count);
 		orderList();
 	}
 }
@@ -364,7 +364,6 @@ function complete(index) {
 $(document).on("click", ".order_accept", function(){
 	const modal = $(".order_accept_modal");
 	const orderIndex = $(this).parents("li").index();
-	console.log("orderIndex = " + orderIndex);
 	
 	const orderInfo = listInfo.getOrderList(orderIndex);
 	const foodInfo = listInfo.getCartList(orderIndex);
@@ -470,8 +469,6 @@ $(document).on("click", ".order_accept", function(){
 			const usedPoint = orderInfo.usedPoint;
 			const deleveryTip = orderInfo.deleveryTip;
 			
-			console.log(impUid);
-			
 			if(!cancleReason) {
 				swal('주문거부 사유를 선택해주세요');
 				return;
@@ -516,8 +513,6 @@ $(document).on("click", ".complete", function(){
 	const orderIndex = $(this).parents("li").index();
 	const orderInfo = listInfo.getOrderList(orderIndex);
 	const orderNum = orderInfo.orderNum;
-	console.log(orderNum);
-	console.log(orderIndex);
 	
 	const userId =  orderInfo.userId;
 	const data = {

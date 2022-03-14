@@ -435,8 +435,6 @@ $(document).ready(function() {
 		$(".total").html("총 합계 : " + cartTotal.toLocaleString() + "원");
 		$(".m_cart_count").css("display" , "block");
 		$(".m_cart_count").text(cartList.length);
-		console.log(cartList);
-		console.log("장바구니 가게 id " + storeId);
 		
 		minDeleveryCheck();
 	}	

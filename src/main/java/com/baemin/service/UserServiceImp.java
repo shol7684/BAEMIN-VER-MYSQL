@@ -68,7 +68,6 @@ public class UserServiceImp implements UserService {
 		Map<String, Object> errorMsg = new HashMap<>();
 		errorMsg.put("errorMsg", "잘못된 번호입니다");
 		
-		System.out.println(errorMsg);
 		return new ResponseEntity<Map<String,Object>>(errorMsg, HttpStatus.BAD_REQUEST);
 	}
 
@@ -122,7 +121,6 @@ public class UserServiceImp implements UserService {
 		Map<String, Object> map = new HashMap<>();
 		map.put("username", username);
 		map.put("phone", phone);
-		System.out.println(map);
 		String result = userDAO.phoneCheck(map);
 		if("1".equals(result)) {
 			return true;

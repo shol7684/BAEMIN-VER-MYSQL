@@ -33,8 +33,6 @@ public class MainController {
 	
 	@GetMapping("/")
 	public String main(HttpSession session, @AuthenticationPrincipal LoginService user) {
-		System.out.println(user);
-		
 		return "home";
 	}
 	
@@ -45,9 +43,6 @@ public class MainController {
 //		address1 = 우편번호
 //		address2 = 주소
 
-		System.out.println("address1 =" + address1);
-		System.out.println("address2 =" + address2);
-		
         // 넘어온 우편번호와 주소를 json형태로 변환
 		String address = "{\"address1\" : \"" + address1 + "\",\"address2\" : \"" + address2 + "\"}"; 
 		
@@ -66,31 +61,6 @@ public class MainController {
 		session.setMaxInactiveInterval(3600 * 3);
 		session.setAttribute("BMaddress", addMap);
 	}
-	
-	
-	
-	
-	@GetMapping("/test")
-	public String test(String input) {
-		System.out.println("테스트페이지");
-		System.out.println(input);
-		return "test";
-	}
-	
-	
-	@ResponseBody
-	@GetMapping("/test2")
-	public String test2(String input) {
-		System.out.println(input);
-		
-		
-		
-		return input;
-	}
-	
-	
-	
-	
 	
 	
 	

@@ -76,7 +76,6 @@ public class OrderController {
 		
 		String token = paymentService.getToken();
 		
-		System.out.println("토큰 : " + token);
 		// 결제 완료된 금액
 		int amount = paymentService.paymentInfo(orderInfo.getImpUid(), token);
 		
@@ -131,15 +130,12 @@ public class OrderController {
 	@GetMapping({"/orderList", "/orderList/{page}"})
 	public String orderList(@AuthenticationPrincipal LoginService user, Model model, @PathVariable(required = false) Integer page) {
 		if (user == null) {
-			System.out.println("주문목록 비로그인");
+//			System.out.println("주문목록 비로그인");
 		} else {
-			System.out.println("주문목록 로그인");
 			long userId = user.getUser().getId();
 
 			Page p = new Page(page);
 			List<OrderList> orderList = orderService.orderList(userId, p);
-			
-			orderList.forEach(System.out::println);
 			
 			if (orderList.size() == 0) {
 				return "order/orderList";
@@ -168,10 +164,8 @@ public class OrderController {
 		OrderList orderDetail = orderService.orderListDetail(orderNum);
 		
 		if (user != null && (user.getUser().getId() != orderDetail.getUserId())) {
-			System.out.println("다른 사용자");
 			return "redirect:/";
 		} else if (user == null) {
-			System.out.println("비로그인");
 			return "redirect:/";
 		}
 		

@@ -20,6 +20,7 @@ import com.baemin.dto.SalesDetail;
 import com.baemin.dto.Store;
 import com.baemin.util.FoodInfoFromJson;
 import com.baemin.util.Page;
+import com.baemin.util.SalesCalendar;
 import com.baemin.util.SalesSort;
 
 @Service
@@ -49,7 +50,6 @@ public class AdminServiceImp implements AdminService {
 	public void addMenu(Food food, String[] foodOption, Integer[] foodOptionPrice) {
 		long foodId = adminDAO.addMenu(food);
 		
-		System.out.println("foodId" + foodId);
 		
 		if(foodOption != null) {
 			List<Map<String, Object>> optionList = new ArrayList<>();
@@ -206,14 +206,49 @@ public class AdminServiceImp implements AdminService {
 
 	@Override
 	public List<Sales> sales(long storeId, String date, String term) {
-		date = date + "-01";
+		
+		// 달력만들기
+		SalesCalendar s = new SalesCalendar();
+		List<Sales> cal = s.getCal(term, date);
+		
+		// 매출가져오기
+		String startDate = cal.get(0).getOrderDate();
+		String endDate = cal.get(cal.size()-1).getOrderDate();
 		
 		Map<String, Object> map = new HashMap<>();
 		map.put("storeId", storeId);
-		map.put("date", date);
-		map.put("term", term);
+		map.put("startDate", startDate);
+		map.put("endDate", endDate);
 		
-		return adminDAO.sales(map);
+		if(term.equals("year")) {
+			map.put("dateFormat", "%Y-%m-01");
+		} else {
+			map.put("dateFormat", "%Y-%m-%d");
+		}
+		
+		
+		List<Sales> sales = adminDAO.sales(map);
+		
+		
+		// 달력과 매출 합치기
+		int count = 0;
+		for(int i=0;i<cal.size();i++) {
+			if(sales.size() == count) {
+				break;
+			}
+			
+			String calDate = cal.get(i).getOrderDate();
+			String salesDate = sales.get(count).getOrderDate();
+			
+			if(calDate.equals(salesDate)) {
+				cal.set(i, sales.get(count));
+				count++;
+			}
+		}
+		
+		
+		
+		return cal;
 	}
 	
 }

@@ -5,8 +5,8 @@
 <mapper namespace="user">
 
 	<select id="overlapCheck" resultType="int">
-		<!-- SELECT COUNT(*) FROM BM_USER WHERE ${valueType } = #{value } -->
-		SELECT EXISTS(SELECT 1 FROM BM_USER WHERE ${valueType } = #{value }) FROM BM_USER 
+		SELECT COUNT(*) FROM BM_USER WHERE ${valueType } = #{value }
+		<!-- SELECT EXISTS(SELECT 1 FROM BM_USER WHERE ${valueType } = #{value }) FROM BM_USER --> 
 	</select>
 	
 	
